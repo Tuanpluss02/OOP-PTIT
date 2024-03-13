@@ -1,4 +1,4 @@
-public class Product {
+class Product {
     private String name, location;
     private int weight;
 
@@ -35,6 +35,4 @@ public class Main {
         m2.printProduct();
         m3.printProduct();
     }
-}{
-
 }
