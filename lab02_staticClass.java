@@ -1,184 +1,121 @@
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-@SuppressWarnings("all")
-
-class User {
-    String id, username;
-    BigDecimal balance;
+class Account {
+    String id;
+    String name;
+    long balance;
     static int nextId;
 
-    User(String username, BigDecimal balance) {
-        this.username = username;
-        this.balance = balance;
-        this.id = getNextId();
-    }
-
     String getNextId() {
-        String ans = "";
+        String res = "";
         if (nextId == 0)
             nextId++;
-        if (nextId < 10)
-            ans = "00" + nextId;
-        else if (nextId < 100)
-            ans = "0" + nextId;
+        if (nextId < 10) {
+            res = "00" + Integer.toString(nextId);
+        } else if (nextId < 100)
+            res = "0" + Integer.toString(nextId);
         else
-            ans = "" + nextId;
+            res = Integer.toString(nextId);
         nextId++;
-        return ans;
+        return res;
     }
 
-    String getName() {
-        return this.username;
+    Account(String name, long balance) {
+        this.id = getNextId();
+        this.name = name;
+        this.balance = balance;
     }
 
-    BigDecimal getBalance() {
-        return this.balance;
+    public String toString() {
+        return "[" + this.id + ", " + this.name + ", " + this.balance + "]";
     }
+
+    public void deposit(long amount) {
+        this.balance += amount;
+    }
+
+    public void withdraw(long amount) {
+        this.balance -= amount;
+    }
+
 }
 
 class Utils {
-    static User findUserById(List<User> users, String id) {
-        int idInt = Integer.parseInt(id);
-        for (User user : users) {
-            if (Integer.parseInt(user.id) == idInt) {
-                // System.out.println("User: " + user.id + " " + user.username + " " +
-                // user.balance);
-                return user;
+    public static Account findAccountById(List<Account> accounts, String id) {
+        for (Account account : accounts) {
+            if (account.id.equals(id)) {
+                return account;
             }
         }
         return null;
     }
-
-    static void increaseBalance(User user, BigDecimal amount) {
-        user.balance = user.balance.add(amount);
-    }
-
-    static void decreaseBalance(User user, BigDecimal amount) {
-        user.balance = user.balance.subtract(amount);
-    }
-
-    static void printUser(List<User> users) {
-        for (User user : users) {
-            System.out.print("[" + user.id + ", " + user.username + ", " + user.balance + "]");
-        }
-    }
-
-    static boolean isExistUser(List<User> users, String id) {
-        int idInt = Integer.parseInt(id);
-        for (User user : users) {
-            if (Integer.parseInt(user.id) == idInt) {
-                // System.out.println("User: " + user.id + " " + user.username + " " +
-                // user.balance);
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
 
-public class lab02_staticClass {
-    @SuppressWarnings("resource")
+public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        List<User> users = new ArrayList<User>();
-        long t = sc.nextInt();
+        int t = sc.nextInt();
         sc.nextLine();
         while (t-- > 0) {
-            String input = sc.nextLine();
-            String[] splitInput = input.split("\\s+");
-            String regex = "\\d+";
-            String username = "";
-            BigDecimal balance = BigDecimal.ZERO;
-
-            for (int i = 1; i < splitInput.length; i++) {
-                if (!splitInput[i].matches(regex)) {
-                    username += splitInput[i];
-                    if (!splitInput[i + 1].matches(regex)) {
-                        username += " ";
+            List<Account> accounts = new ArrayList<>();
+            sc.nextInt();
+            String inputAcc = sc.nextLine();
+            Pattern pattern = Pattern.compile("\\s*([\\p{L}\\s]+?)\\s+(\\d+)\\s*");
+            Matcher matcher = pattern.matcher(inputAcc);
+            while (matcher.find()) {
+                String name = matcher.group(1).replaceAll("\\s+", " ");
+                long balance = Integer.parseInt(matcher.group(2));
+                accounts.add(new Account(name, balance));
+            }
+            String inputOp = sc.nextLine();
+            List<String> list = new ArrayList<>();
+            list = Arrays.asList(inputOp.split("\\s+"));
+            int index = 0;
+            int operator = Integer.parseInt(list.get(index++));
+            for (int i = 0; i < operator; i++) {
+                String op = list.get(index++).toLowerCase();
+                // System.out.println(op);
+                if (op.equals("rut")) {
+                    String id = list.get(index++);
+                    long amount = Long.parseLong(list.get(index++));
+                    Account account = Utils.findAccountById(accounts, id);
+                    if (account != null && account.balance >= amount && amount >= 0) {
+                        account.withdraw(amount);
+                    }
+                } else if (op.equals("chuyen")) {
+                    String id1 = list.get(index++);
+                    String id2 = list.get(index++);
+                    long amount = Long.parseLong(list.get(index++));
+                    Account account1 = Utils.findAccountById(accounts, id1);
+                    Account account2 = Utils.findAccountById(accounts, id2);
+                    if (account1 != null && account2 != null && account1.balance >= amount) {
+                        account1.withdraw(amount);
+                        account2.deposit(amount);
+                    }
+                } else if (op.equals("nap")) {
+                    String id = list.get(index++);
+                    long amount = Long.parseLong(list.get(index++));
+                    Account account = Utils.findAccountById(accounts, id);
+                    if (account != null && amount >= 0) {
+                        account.deposit(amount);
                     }
                 } else {
-                    balance = new BigDecimal(splitInput[i]);
-                    users.add(new User(username, balance));
-                    username = "";
-                    balance = BigDecimal.ZERO;
+                    // System.out.println("invalid input");
+                    index += 3;
                 }
+
             }
-
-            if (!sc.hasNextLine()) {
-                for (User user : users) {
-                    System.out.print("[" + user.id + ", " + user.username + ", " + user.balance + "]");
-                }
-                return;
+            for (Account account : accounts) {
+                System.out.print(account.toString());
             }
-
-            String transaction = sc.nextLine();
-            String[] splitTransaction = transaction.split("\\s+");
-
-            for (int i = 1; i < splitTransaction.length;) {
-
-                if (!splitTransaction[i].equals("nap")
-                        && !splitTransaction[i].equals("rut")
-                        && !splitTransaction[i].equals("chuyen")) {
-                    System.out.println("invalid input");
-                    i += 3;
-                } else if (splitTransaction[i].equals("nap")) {
-
-                    String id = splitTransaction[i + 1];
-
-                    BigDecimal amount = new BigDecimal(splitTransaction[i + 2]);
-
-                    User user = Utils.findUserById(users, id);
-                    if (!Utils.isExistUser(users, id)) {
-                        i += 3;
-                    } else {
-                        Utils.increaseBalance(user, amount);
-                        i += 3;
-                    }
-                } else if (splitTransaction[i].equals("rut")) {
-
-                    String id = splitTransaction[i + 1];
-
-                    BigDecimal amount = new BigDecimal(splitTransaction[i + 2]);
-
-                    User user = Utils.findUserById(users, id);
-                    if (!Utils.isExistUser(users, id)) {
-                        i += 3;
-                    } else if (user.balance.compareTo(amount) < 0) {
-                        i += 3;
-                    } else {
-                        Utils.decreaseBalance(user, amount);
-                        i += 3;
-                    }
-                } else if (splitTransaction[i].equals("chuyen")) {
-
-                    String id1 = splitTransaction[i + 1];
-                    String id2 = splitTransaction[i + 2];
-
-                    BigDecimal amount = new BigDecimal(splitTransaction[i + 3]);
-
-                    User user1 = Utils.findUserById(users, id1);
-                    User user2 = Utils.findUserById(users, id2);
-
-                    if (!Utils.isExistUser(users, id1) || !Utils.isExistUser(users, id2)) {
-                        i += 4;
-                    } else if (user1.balance.compareTo(amount) < 0) {
-                        i += 4;
-                    } else {
-                        Utils.decreaseBalance(user1, amount);
-                        Utils.increaseBalance(user2, amount);
-                        i += 4;
-                    }
-                }
-            }
-
-            Utils.printUser(users);
             System.out.println();
-            users = new ArrayList<User>();
-            User.nextId = 0;
+            Account.nextId = 0;
         }
+        sc.close();
     }
 }
