@@ -11,9 +11,13 @@ class Song {
         this.duration = duration;
     }
 
-    public boolean equals(Song s) {
-        if (this.name.equals(s.name) && this.author.equals(s.author) && this.duration == s.duration) {
-            return true;
+    @Override
+    public boolean equals(Object s) {
+        if (s instanceof Song) {
+            Song d = (Song) s;
+            if (this.name.equals(d.name) && this.author.equals(d.author) && this.duration == d.duration) {
+                return true;
+            }
         }
         return false;
     }

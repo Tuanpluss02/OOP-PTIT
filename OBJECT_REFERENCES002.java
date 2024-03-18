@@ -7,9 +7,14 @@ class SimpleDate {
         this.year = year;
     }
 
-    public boolean equals(SimpleDate s) {
-        if (this.day == s.day && this.month == s.month && this.year == s.year)
-            return true;
+    @Override
+    public boolean equals(Object s) {
+        if (s instanceof SimpleDate) {
+            SimpleDate d = (SimpleDate) s;
+            if (this.day == d.day && this.month == d.month && this.year == d.year) {
+                return true;
+            }
+        }
         return false;
     }
 }
