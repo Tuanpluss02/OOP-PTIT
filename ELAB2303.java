@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 import java.util.Scanner;
 import java.util.List;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+=======
+>>>>>>> eed6e8b01c59b267e61a287b86d9731f6e28368b
 class MyStuff {
     private String name;
 
@@ -11,6 +14,7 @@ class MyStuff {
         // System.out.println("My Stuff is: " + name);
     }
 
+<<<<<<< HEAD
     public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -18,6 +22,10 @@ class MyStuff {
             return false;
         MyStuff myStuff = (MyStuff) o;
         return name.equals(myStuff.name);
+=======
+    public boolean equals(MyStuff m) {
+        return (m.name.equals(name));
+>>>>>>> eed6e8b01c59b267e61a287b86d9731f6e28368b
     }
 }
 
@@ -33,9 +41,15 @@ public class Main {
         else
             System.out.println("different");
 
+<<<<<<< HEAD
         // b. Viết thêm code vào dấu ...
         System.out.print("reference compared: ");
         if (m2.hashCode() == m1.hashCode())
+=======
+        // b.
+        System.out.print("reference compared: ");
+        if (m2 == m1)
+>>>>>>> eed6e8b01c59b267e61a287b86d9731f6e28368b
             System.out.println("same");
         else
             System.out.println("different");
