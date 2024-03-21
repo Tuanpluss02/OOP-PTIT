@@ -47,8 +47,10 @@ class Account {
 
 class Utils {
     public static Account findAccountById(List<Account> accounts, String id) {
+        int idNeedFind = Integer.parseInt(id);
         for (Account account : accounts) {
-            if (account.id.equals(id)) {
+            int accId = Integer.parseInt(account.id);
+            if (accId == idNeedFind) {
                 return account;
             }
         }
